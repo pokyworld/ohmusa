@@ -37,8 +37,7 @@
   MAIL_USERNAME = Application("MAIL_USERNAME")
   MAIL_PASSWORD = Application("MAIL_PASSWORD")
   MAIL_ENCRYPTION = Application("MAIL_ENCRYPTION")
-  
-  
+
   If Len(OrderId) >= 1 And Len(StripeSessionId) >= 1 Then
 %>
   <!--// order functions -->
