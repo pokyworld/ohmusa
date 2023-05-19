@@ -1,0 +1,178 @@
+html,
+body {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  font-family: sans-serif;
+}
+
+@media screen and (max-width: 600px) {
+  .mainTable .category {
+    display: none;
+  }
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stripe-result, .order-message {
+  padding: 0 2rem;
+}
+@media screen and (max-width: 800px) {
+  .stripe-result, .order-message {
+    padding: 0.25rem 0 0.5rem;
+  }
+}
+.stripe-result .table-wrapper, .order-message .table-wrapper {
+  display: flex;
+  flex-grow: 1;
+  flex: 1;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-bottom: 1rem;
+}
+@media screen and (max-width: 800px) {
+  .stripe-result .table-wrapper, .order-message .table-wrapper {
+    gap: 1rem;
+    margin-left: -0.25rem;
+  }
+}
+.stripe-result .table-wrapper hr, .order-message .table-wrapper hr {
+  border-top: solid 1px lightgray;
+  margin-left: -3px;
+  margin-right: -3px;
+  border-collapse: collapse;
+}
+.stripe-result .table-wrapper .tbl-address,
+.stripe-result .table-wrapper .tbl-contact,
+.stripe-result .table-wrapper .tbl-totals, .order-message .table-wrapper .tbl-address,
+.order-message .table-wrapper .tbl-contact,
+.order-message .table-wrapper .tbl-totals {
+  display: flex;
+  flex: 1;
+}
+.stripe-result .table-wrapper .tbl-address th,
+.stripe-result .table-wrapper .tbl-contact th,
+.stripe-result .table-wrapper .tbl-totals th, .order-message .table-wrapper .tbl-address th,
+.order-message .table-wrapper .tbl-contact th,
+.order-message .table-wrapper .tbl-totals th {
+  text-align: left;
+}
+.stripe-result .table-wrapper .tbl-address td,
+.stripe-result .table-wrapper .tbl-contact td,
+.stripe-result .table-wrapper .tbl-totals td, .order-message .table-wrapper .tbl-address td,
+.order-message .table-wrapper .tbl-contact td,
+.order-message .table-wrapper .tbl-totals td {
+  padding: 0.1px 0.5rem;
+}
+@media screen and (max-width: 450px) {
+  .stripe-result .table-wrapper .tbl-address td,
+  .stripe-result .table-wrapper .tbl-contact td,
+  .stripe-result .table-wrapper .tbl-totals td, .order-message .table-wrapper .tbl-address td,
+  .order-message .table-wrapper .tbl-contact td,
+  .order-message .table-wrapper .tbl-totals td {
+    font-size: 0.9em;
+    width: 90vw;
+  }
+}
+.stripe-result .table-wrapper .tbl-address td span,
+.stripe-result .table-wrapper .tbl-contact td span,
+.stripe-result .table-wrapper .tbl-totals td span, .order-message .table-wrapper .tbl-address td span,
+.order-message .table-wrapper .tbl-contact td span,
+.order-message .table-wrapper .tbl-totals td span {
+  font-weight: 600;
+  margin-right: 1rem;
+}
+.stripe-result .table-wrapper .tbl-totals, .order-message .table-wrapper .tbl-totals {
+  justify-content: flex-end;
+  flex: 1;
+  width: 50%;
+}
+@media screen and (max-width: 401px) {
+  .stripe-result .table-wrapper .tbl-totals, .order-message .table-wrapper .tbl-totals {
+    width: 100%;
+  }
+}
+.stripe-result .table-wrapper .tbl-totals tr.border td,
+.stripe-result .table-wrapper .tbl-totals tr.border th, .order-message .table-wrapper .tbl-totals tr.border td,
+.order-message .table-wrapper .tbl-totals tr.border th {
+  border-top: solid 2px lightgray;
+  border-bottom: solid 2px lightgray;
+}
+.stripe-result .table-wrapper .order-lines,
+.stripe-result .table-wrapper .tbl-totals,
+.stripe-result .table-wrapper .tbl-payment, .order-message .table-wrapper .order-lines,
+.order-message .table-wrapper .tbl-totals,
+.order-message .table-wrapper .tbl-payment {
+  width: 100%;
+  padding: 0 0.5rem;
+}
+.stripe-result .table-wrapper .order-lines th,
+.stripe-result .table-wrapper .order-lines td,
+.stripe-result .table-wrapper .tbl-totals th,
+.stripe-result .table-wrapper .tbl-totals td,
+.stripe-result .table-wrapper .tbl-payment th,
+.stripe-result .table-wrapper .tbl-payment td, .order-message .table-wrapper .order-lines th,
+.order-message .table-wrapper .order-lines td,
+.order-message .table-wrapper .tbl-totals th,
+.order-message .table-wrapper .tbl-totals td,
+.order-message .table-wrapper .tbl-payment th,
+.order-message .table-wrapper .tbl-payment td {
+  padding: 0.2rem 0.25rem;
+  text-align: left;
+  vertical-align: middle;
+}
+.stripe-result .table-wrapper .order-lines th.right,
+.stripe-result .table-wrapper .order-lines td.right,
+.stripe-result .table-wrapper .tbl-totals th.right,
+.stripe-result .table-wrapper .tbl-totals td.right,
+.stripe-result .table-wrapper .tbl-payment th.right,
+.stripe-result .table-wrapper .tbl-payment td.right, .order-message .table-wrapper .order-lines th.right,
+.order-message .table-wrapper .order-lines td.right,
+.order-message .table-wrapper .tbl-totals th.right,
+.order-message .table-wrapper .tbl-totals td.right,
+.order-message .table-wrapper .tbl-payment th.right,
+.order-message .table-wrapper .tbl-payment td.right {
+  text-align: right;
+}
+.stripe-result .table-wrapper .order-lines th.center,
+.stripe-result .table-wrapper .order-lines td.center,
+.stripe-result .table-wrapper .tbl-totals th.center,
+.stripe-result .table-wrapper .tbl-totals td.center,
+.stripe-result .table-wrapper .tbl-payment th.center,
+.stripe-result .table-wrapper .tbl-payment td.center, .order-message .table-wrapper .order-lines th.center,
+.order-message .table-wrapper .order-lines td.center,
+.order-message .table-wrapper .tbl-totals th.center,
+.order-message .table-wrapper .tbl-totals td.center,
+.order-message .table-wrapper .tbl-payment th.center,
+.order-message .table-wrapper .tbl-payment td.center {
+  text-align: center;
+}
+.stripe-result .table-wrapper .order-lines th img,
+.stripe-result .table-wrapper .order-lines td img,
+.stripe-result .table-wrapper .tbl-totals th img,
+.stripe-result .table-wrapper .tbl-totals td img,
+.stripe-result .table-wrapper .tbl-payment th img,
+.stripe-result .table-wrapper .tbl-payment td img, .order-message .table-wrapper .order-lines th img,
+.order-message .table-wrapper .order-lines td img,
+.order-message .table-wrapper .tbl-totals th img,
+.order-message .table-wrapper .tbl-totals td img,
+.order-message .table-wrapper .tbl-payment th img,
+.order-message .table-wrapper .tbl-payment td img {
+  height: 40px;
+  width: auto;
+}
+
+/*# sourceMappingURL=template.css.map */
