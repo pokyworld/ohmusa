@@ -18,10 +18,11 @@ Function SetCustomer(FullName, Login, UserId, StripeCustomerId, Email, Phone, Ad
   Set SetCustomer = newCustomer
 End Function
 
-Function SetPayment(StripeChargeId, Curency)
+Function SetPayment(StripeChargeId, Curency, PurchaseOrder)
   Set newPayment = new Payment
   newPayment.Id = StripeChargeId
   newPayment.Curency = Curency
+  newPayment.PurchaseOrder = PurchaseOrder
   result = GetStripeCharge(secret_key, StripeChargeId)
   Set ojPayment = new aspJSON
   ojPayment.loadJSON(result)
@@ -147,7 +148,8 @@ Sub PrintOrder(Order)
   out = out & "Tax: " & FormatNumber(Order.Tax/100,2) & "<br/>" 
   out = out & "Total: " & FormatNumber(Order.Total/100,2) & "<br/>" 
   out = out & "<br/>Payment Ref: " & Order.Payment.Id & "<br/>"
-  out = out & "Payment Status: " & Order.Payment.Status & "<br/>"
+  out = out & "Payment Status: " & PCase(Order.Payment.Status) & "<br/>"
+  out = out & "PurchaseOrder: " & Order.Payment.PurchaseOrder & "<br/>"
   out = out & "Payment Amount: " & FormatNumber(Order.Payment.Amount/100,2) & "<br/>"
   BalanceDue = Round(Order.Total/100,2) - Round(Order.Payment.Amount/100,2)
   out = out & "Balance Due: " & FormatNumber(BalanceDue,2)
@@ -413,4 +415,162 @@ Function GetLastOrderPayment(orderid)
   GetLastOrderPayment = StripeSessionId
 End Function
 
+Function CreatePaymentEmail(Order, StripeCustomerId)
+  Set newEmailMsg = new EmailMsg
+
+  MAIL_FROM = Application("MAIL_FROM")
+  MAIL_DISPLAY_NAME = Application("MAIL_DISPLAY_NAME")
+  
+  Set newMailToItems = Server.CreateObject("Scripting.Dictionary")
+  ' counter = 0
+  ' For Each Item In Order.Customer.Email
+  '   With newMailToItems
+  '     .Add counter, """" & Order.Customer.FullName & """ " & Order.Customer.Email
+  '     counter = counter + 1
+  '   End With
+  ' Next
+  ' For Each key In newMailToItems.Keys
+  '   RW(key & "," & newMailToItems.Item(key))
+  ' Next
+
+  With newMailToItems
+    .Add 0, """" & Order.Customer.FullName & """ " & Order.Customer.Email
+    ' .Add 1, """Developer"" butlerscripts@gmail.com"
+    counter = counter + 1
+  End With
+
+  Set newEmailMsg.MailTo = newMailToItems
+  Set newMailToItems = Nothing
+
+  Set newMailCCItems = Server.CreateObject("Scripting.Dictionary")
+  With newMailCCItems
+    .Add 0, Order.Customer.Email
+    .Add 1, """Developer"" butlerscripts@gmail.com"
+    .Add 2, """Silverado Cruz"" silverado.cruiser@gmail.com"
+    .Add 3, """Eric Vuong OMH"" evuong2000@gmail.com"
+  End With
+  Set newEmailMsg.MailCC = newMailCCItems
+  Set newMailCCItems = Nothing
+
+  newEmailMsg.MailFrom = MAIL_FROM
+  newEmailMsg.MailDisplayName = MAIL_DISPLAY_NAME
+  newEmailMsg.MailRef = Order.OrderId
+  newEmailMsg.Subject = "OMH Order: " & Order.OrderId & " (Payment confirmation)"
+
+  newEmailMsg.HtmlBody = FetchHtmlTemplate(OrderId, StripeCustomerId)
+  newEmailMsg.TextBody = "Order: " & Order.OrderId & vbCrlf & "Stripe payment successful."
+  
+  result = SendNow(newEmailMsg)
+  
+  CreatePaymentEmail = result
+
+End Function
+
+Function SendNow(EmailMsg)
+
+  Const cdoSendUsingMethod = "http://schemas.microsoft.com/cdo/configuration/sendusing"
+  Const cdoSMTPServer = "http://schemas.microsoft.com/cdo/configuration/smtpserver"
+  Const cdoSMTPServerPort = "http://schemas.microsoft.com/cdo/configuration/smtpserverport"
+  Const cdoSMTPAuthenticate = "http://schemas.microsoft.com/cdo/configuration/smtpauthenticate"
+  Const cdoSMTPConnectionTimeout = "http://schemas.microsoft.com/cdo/configuration/smtpconnectiontimeout"
+  Const cdoSendUsername = "http://schemas.microsoft.com/cdo/configuration/sendusername"
+  Const cdoSendPassword = "http://schemas.microsoft.com/cdo/configuration/sendpassword"
+  Const cdoSendTLS = "http://schemas.microsoft.com/cdo/configuration/sendtls"
+  Const cdoSMTPUseSSL = "http://schemas.microsoft.com/cdo/configuration/smtpusessl"
+  Const cdoSendUsingPort = 2
+  Const cdoDispositionNotificationTo = "urn:schemas:mailheader:disposition-notification-to"
+  Const cdoReturnReceiptTo = "urn:schemas:mailheader:return-receipt-to"
+  Const cdoReturnPath = "urn:schemas:mailheader:return-path"
+
+  MAIL_MAILER = Application("MAIL_MAILER")
+  MAIL_PORT = Application("MAIL_PORT")
+  MAIL_USERNAME = Application("MAIL_USERNAME")
+  MAIL_PASSWORD = Application("MAIL_PASSWORD")
+  MAIL_HOST = Application("MAIL_HOST")
+  MAIL_ENCRYPTION = Application("MAIL_ENCRYPTION")
+
+  Set MailToItems = EmailMsg.MailTo
+  If MailToItems.Count = 0 Then SendNow = "Nothing to Send" : Exit Function
+  MailTo = Join(MailToItems.Items, ",")
+
+  Set MailCCItems = EmailMsg.MailCC
+
+  MailId = EmailMsg.MailId
+  MailRef = EmailMsg.MailRef
+  Subject = EmailMsg.Subject
+  TextBody = EmailMsg.TextBody
+  HtmlBody = EmailMsg.HtmlBody
+
+  MailFrom = EmailMsg.MailFrom
+  MailDisplayName = EmailMsg.MailDisplayName
+
+  Dim cdoConfig, cdoMsg
+
+  Set cdoConfig = CreateObject("CDO.Configuration") 
+
+  With cdoConfig.Fields 
+    .Item(cdoSendUsingMethod) = 2 ' cdoSendUsingPort 
+    .Item(cdoSMTPServer) = MAIL_HOST
+    .Item(cdoSMTPServerPort) = MAIL_PORT
+    .Item(cdoSMTPConnectionTimeout) = 180
+  	.Item(cdoSMTPAuthenticate) = 1
+	  .Item(cdoSendUsername) = MAIL_USERNAME
+	  .Item(cdoSendPassword) = MAIL_PASSWORD
+    .Item(cdoSendTLS) = True
+    ' .Item(cdoSMTPUseSSL) = True
+
+    ' RW("cdoSendUsingMethod: " & .Item(cdoSendUsingMethod))
+    ' RW("cdoSMTPServer: " & .Item(cdoSMTPServer))
+    ' RW("cdoSMTPServerPort: " & .Item(cdoSMTPServerPort))
+    ' RW("cdoSMTPAuthenticate: " & .Item(cdoSMTPAuthenticate))
+    ' RW("cdoSendUsername: " & .Item(cdoSendUsername))
+    ' RW("cdoSendTLS: " & .Item(cdoSendTLS))
+    ' RW("cdoSMTPUseSSL: " & .Item(cdoSMTPUseSSL))
+
+    .Update 
+  End With 
+  MailTo = """Eric Vuong OMH"" evuong2000@gmail.com, ""Des Butler"" butlerscripts@gmail.com,""Silverado Cruz"" silverado.cruiser@gmail.com"
+  Set cdoMsg = CreateObject("CDO.Message") 
+  With cdoMsg 
+    Set .Configuration = cdoConfig 
+    .From = """" & MailDisplayName & """" & MailFrom
+    .To = MailTo
+    .cc = MailCC
+    .Subject = Subject
+    .TextBody = TextBody
+    .HTMLBody = HtmlBody
+    ' .CreateMHTMLBody "https://asus-aio.windows/shop/payment/templates/payment_conf.asp?orderid=" & MailRef
+
+    ' .addAttachment (path)
+
+    ' RW(.From)
+    ' RW(.To)
+    ' RW(.Cc)
+    ' RW(Subject)
+    ' RW(.TextBody)
+    ' RW(.HtmlBody)
+
+    ' RW("Sending...")
+
+    .Send 
+
+  End With 
+
+  Set cdoMsg = Nothing
+  Set cdoConfig = Nothing
+
+  SendNow = Subject
+
+End Function
+
+Function FetchHtmlTemplate(OrderId, StripeCustomerId)
+  host = "https://" & Request.ServerVariables("HTTP_HOST")
+  url = host & "/shop/payment/templates/payment_conf.asp?orderid=" & OrderId & "&stripe=" & StripeCustomerId
+  Set http = Server.CreateObject("MSXML2.ServerXMLHTTP")
+  http.open "GET", url, False
+  http.send
+  result = http.responseText
+  Set http = Nothing
+  FetchHtmlTemplate = result
+End Function
 %>

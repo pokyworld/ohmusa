@@ -1,3 +1,3 @@
 <%
-  Set newPayment = SetPayment(StripePaymentId, Curency)
+  Set newPayment = SetPayment(StripePaymentId, Curency, PurchaseOrder)
 %>

@@ -37,6 +37,18 @@ Function LogDt(value)
     LogDt = output
 End Function
 
+Function PCase(input)
+    aryWords = Split(input," ")
+    For w = 0 To UBound(aryWords)
+    newWord = ""
+    newWord = UCase(Left(aryWords(w), 1)) & Right(aryWords(w), Len(aryWords(w))-1)
+    RW(aryWords(w) & " : " & newWord)
+    aryWords(w) = newWord
+    Next
+    output = Join(aryWords, " ")
+    PCase = output
+End Function
+
 ' Pad strings with specified character to specified length
 Function Pad(value, where, char, length)
   Select case where

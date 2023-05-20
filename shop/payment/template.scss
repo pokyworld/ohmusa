@@ -27,8 +27,13 @@ body {
   margin-bottom: 1rem;
 }
 
-.stripe-result, .order-message {
+.stripe-result,
+.order-message {
   padding: 0 2rem;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 
   @media screen and (max-width: 800px) {
     padding: 0.25rem 0 0.5rem;

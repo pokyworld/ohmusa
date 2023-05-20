@@ -168,8 +168,8 @@
 </body>
 </html>
 <%
-  ' RW(StripeSessionResult)
-  ' RW(StripeInvoiceResult)
+  RW(StripeSessionResult)
+  RW(StripeInvoiceResult)
   ' RW(StripePaymentResult)
   ' RW(StripeChargeResult)
   

@@ -22,12 +22,13 @@
   sql = sql & "c.stripeId, d.Product_Name AS productName, od.quantity, ROUND(od.price,2) AS price, "
   sql = sql & "o.shippingCost, o.promoCode, o.promoDiscount, o.discount, o.total AS subTotal, "
   sql = sql & "0 AS salesTax, o.total, o.Contactname, o.ShiptoCompanyName, o.stripePaymentId, "
-  sql = sql & "o.address1, o.address2, o.city, o.state, o.zip, o.country, o.email, o.phone "
+  sql = sql & "o.address1, o.address2, o.city, o.state, o.zip, o.country, o.email, o.phone, py.po "
   sql = sql & "FROM dbo.orders o "
   sql = sql & "LEFT JOIN dbo.consumer c ON c.[login] = o.[login] "
   sql = sql & "INNER JOIN dbo.orderdetail od ON od.orderid = o.orderid "
   sql = sql & "INNER JOIN dbo.dropshiptemplate2013 d ON d.itemid = od.productid "
   sql = sql & "INNER JOIN dbo.Products p ON p.item = d.product_code "
+  sql = sql & "INNER JOIN dbo.payment py ON py.paymentId = o.paymentId "
   sql = sql & "WHERE o.orderid = " & orderId & " "
 
   'Create connection and query category data.
@@ -76,6 +77,8 @@
         End If
       End If
       StripePaymentId = Trim(rsOrder("stripePaymentId")&"")
+      PurchaseOrder = Trim(rsOrder("po")&"")
+      If Len(PurchaseOrder) = 0 Then : PurchaseOrder = "None"
       Email = LCase(Trim(rsOrder("email")&""))
       Phone = Trim(rsOrder("phone")&"")
 

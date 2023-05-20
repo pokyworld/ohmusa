@@ -10,6 +10,7 @@
 <!--#include virtual="/shop/payment/classes/orderItem.asp"-->
 <!--#include virtual="/shop/payment/classes/order.asp"-->
 <!--#include virtual="/shop/payment/classes/address.asp"-->
+<!--#include virtual="/shop/payment/classes/emailMsg.asp"-->
 <%
 
   Response.Expires=0
@@ -392,6 +393,10 @@
               </tr>
               <tr><td colspan="2">&nbsp;</td></tr>
               <tr>
+                <td><span>Purchase Order:</span></td>
+                <td class="right"><%=newOrder.Payment.PurchaseOrder%></td>
+              </tr>
+              <tr>
                 <td><span>Payment Ref:</span>&nbsp;*</td>
                 <td id="payment-ref" class="right"><%=newOrder.Payment.Id%></td>
               </tr>
@@ -424,6 +429,17 @@
     <h2>Thank you for your Order.</h2>
       <p>You will receive email confirmation shortly</p>
       <p><small>* If Payment Ref not showing, please refresh screen</small></p>
+<%
+      Response.Flush
+      
+      result = CreatePaymentEmail(newOrder, StripeCustomerId)
+      Response.Write "<p><strong>Email Sent:</strong> " & result & "</p>"
+      If Len(StripeCustomerId) >= 1 Then
+        emailUrl = "https://" & Request.ServerVariables("HTTP_HOST") & "/shop/payment/templates/payment_conf.asp?orderid=" & OrderId & "&stripe=" & Trim(StripeCustomerId)
+        ' RW(emailUrl)
+        Response.Write "<p>view email online <a href=""" & emailUrl & """ target=""_blank"">here</a></p>"
+      End If
+%>      
   </div>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -476,4 +492,6 @@ Else '// no order id
   If Len(OrderId) < 1 Then : RW("Missing OrderId") : Response.End
   If Len(StripeSessionId) < 1 Then : RW("Missing StripeSessionId") : Response.End
 End If
+
+
 %>
