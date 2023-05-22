@@ -38,8 +38,6 @@
 	
 <script type="text/javascript">
 	document.cookie = "screenSize=" + screen.width;
-	
-}
 </script>
 
 </head>

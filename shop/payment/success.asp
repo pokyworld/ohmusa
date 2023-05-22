@@ -21,6 +21,15 @@
   If Len(Trim(Request.QueryString("orderid")&"")) >= 1 Then : OrderId = Trim(Request.QueryString("orderid")&"")
   If Len(Trim(Request.QueryString("userid")&"")) >= 1 Then : UserId = Trim(Request.QueryString("userid")&"")
 
+  Application("MAIL_FROM") = """OMH (USA) Orders"" orders@omhusa.com"
+  Application("MAIL_CC") = """Sales Support"" eric@omhusa.com, ""Developer"" butlerscripts@gmail.com"
+  Application("MAIL_MAILER") = "smtp"
+  Application("MAIL_HOST") = "mail.omhusa.com"
+  Application("MAIL_PORT") = "587"
+  Application("MAIL_USERNAME") = "service@omhusa.com"
+  Application("MAIL_PASSWORD") = "OMH3750SG@$"
+  Application("MAIL_ENCRYPTION") = "tls"
+
   If Len(OrderId) = 0 Then : RW("No Order ID") : Response.End
 
   stripe_mode = UCase(Trim(Application("stripe_mode")&""))
@@ -431,8 +440,14 @@
       <p><small>* If Payment Ref not showing, please refresh screen</small></p>
 <%
       Response.Flush
+
+      result = CreatePaymentEmail(newOrder, StripeCustomerId, null)
+      ' RW(result)
       
-      result = CreatePaymentEmail(newOrder, StripeCustomerId)
+      CCList = Application("MAIL_CC")
+      result = CreatePaymentEmail(newOrder, StripeCustomerId, CCList)
+
+
       Response.Write "<p><strong>Email Sent:</strong> " & result & "</p>"
       If Len(StripeCustomerId) >= 1 Then
         emailUrl = "https://" & Request.ServerVariables("HTTP_HOST") & "/shop/payment/templates/payment_conf.asp?orderid=" & OrderId & "&stripe=" & Trim(StripeCustomerId)

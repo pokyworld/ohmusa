@@ -245,26 +245,23 @@
       width: auto;
     }
     
-    /* .banner { 
-      display: flex;
-      flex: 1;
-      flex-grow: 1;
-      background-image: url(https://omhusa.com/amazingslider/jessica/1.jpg); 
-      background-repeat:no-repeat;
-      background-size: contain;
-      background-position: center;
-      min-height: 100px;
-      margin-bottom: 0px;
-    } */
+    .banner {
+      border-spacing: 0;
+    }
 
     .banner img {
       width: 100%;
       height: auto;
     }
 
+    table { 
+        border: none;
+        border-spacing: 0;
+        border-collapse: separate;
+    }
+
     @media screen and (min-width: 601px) {
       .stripe-result {
-        padding: 2rem;
         margin-bottom: 2rem;
       }
       .banner-row {
@@ -288,7 +285,7 @@
         width: 100vw;
       }
     }
-    .thfeatured {
+    .thfeatured, banner-row {
       background-color: darkslateblue;
       color: white;
       padding: 0.5rem;

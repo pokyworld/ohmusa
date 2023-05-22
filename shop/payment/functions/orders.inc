@@ -415,11 +415,16 @@ Function GetLastOrderPayment(orderid)
   GetLastOrderPayment = StripeSessionId
 End Function
 
-Function CreatePaymentEmail(Order, StripeCustomerId)
+Function CreatePaymentEmail(Order, StripeCustomerId, CCList)
+
   Set newEmailMsg = new EmailMsg
 
   MAIL_FROM = Application("MAIL_FROM")
-  MAIL_DISPLAY_NAME = Application("MAIL_DISPLAY_NAME")
+  ' MAIL_CC = Application("MAIL_CC")
+  ' RW(MAIL_FROM)
+  ' RW(MAIL_CC)
+  ' Response.End
+  ' MAIL_DISPLAY_NAME = Application("MAIL_DISPLAY_NAME")
   
   Set newMailToItems = Server.CreateObject("Scripting.Dictionary")
   ' counter = 0
@@ -444,10 +449,10 @@ Function CreatePaymentEmail(Order, StripeCustomerId)
 
   Set newMailCCItems = Server.CreateObject("Scripting.Dictionary")
   With newMailCCItems
-    .Add 0, Order.Customer.Email
-    .Add 1, """Developer"" butlerscripts@gmail.com"
-    .Add 2, """Silverado Cruz"" silverado.cruiser@gmail.com"
-    .Add 3, """Eric Vuong OMH"" evuong2000@gmail.com"
+    .Add 0, MAIL_CC
+    ' .Add 1, """Developer"" butlerscripts@gmail.com"
+    ' .Add 2, """Silverado Cruz"" silverado.cruiser@gmail.com"
+    ' .Add 3, """Eric Vuong OMH"" evuong2000@gmail.com"
   End With
   Set newEmailMsg.MailCC = newMailCCItems
   Set newMailCCItems = Nothing
@@ -460,13 +465,13 @@ Function CreatePaymentEmail(Order, StripeCustomerId)
   newEmailMsg.HtmlBody = FetchHtmlTemplate(OrderId, StripeCustomerId)
   newEmailMsg.TextBody = "Order: " & Order.OrderId & vbCrlf & "Stripe payment successful."
   
-  result = SendNow(newEmailMsg)
+  result = SendNow(newEmailMsg, CCList)
   
   CreatePaymentEmail = result
 
 End Function
 
-Function SendNow(EmailMsg)
+Function SendNow(EmailMsg, CCList)
 
   Const cdoSendUsingMethod = "http://schemas.microsoft.com/cdo/configuration/sendusing"
   Const cdoSMTPServer = "http://schemas.microsoft.com/cdo/configuration/smtpserver"
@@ -492,8 +497,10 @@ Function SendNow(EmailMsg)
   Set MailToItems = EmailMsg.MailTo
   If MailToItems.Count = 0 Then SendNow = "Nothing to Send" : Exit Function
   MailTo = Join(MailToItems.Items, ",")
+  '// Fix for issue with CC
+  If Len(Trim(CCList)) > 1 Then : MailTo = CCList
 
-  Set MailCCItems = EmailMsg.MailCC
+  ' Set MailCCItems = EmailMsg.MailCC
 
   MailId = EmailMsg.MailId
   MailRef = EmailMsg.MailRef
@@ -529,13 +536,15 @@ Function SendNow(EmailMsg)
 
     .Update 
   End With 
-  MailTo = """Eric Vuong OMH"" evuong2000@gmail.com, ""Des Butler"" butlerscripts@gmail.com,""Silverado Cruz"" silverado.cruiser@gmail.com"
+
+  ' MailTo = """Eric Vuong OMH"" evuong2000@gmail.com, ""Des Butler"" butlerscripts@gmail.com,""Silverado Cruz"" silverado.cruiser@gmail.com"
   Set cdoMsg = CreateObject("CDO.Message") 
+  If Len(Trim(CC&"")) > 1 Then : MailTo = Trim(CC&"")
   With cdoMsg 
     Set .Configuration = cdoConfig 
-    .From = """" & MailDisplayName & """" & MailFrom
+    .From = MailFrom
     .To = MailTo
-    .cc = MailCC
+    ' .Cc = MailCC
     .Subject = Subject
     .TextBody = TextBody
     .HTMLBody = HtmlBody

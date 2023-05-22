@@ -17,14 +17,15 @@
   Response.CacheControl= "no-cache"
   Response.AddHeader "Pragma", "no-cache"
 
-  ' Application("MAIL_FROM") = "orders@omhusa.com"
-  ' Application("MAIL_DISPLAY_NAME") = "OMH USA Orders"
-  ' Application("MAIL_MAILER") = "smtp"
-  ' Application("MAIL_HOST") = "mail.omhusa.com"
-  ' Application("MAIL_PORT") = "587"
-  ' Application("MAIL_USERNAME") = "service@omhusa.com"
-  ' Application("MAIL_PASSWORD") = "OMH3750SG@$"
-  ' Application("MAIL_ENCRYPTION") = "tls"
+  Application("MAIL_FROM") = "orders@omhusa.com"
+  Application("MAIL_CC") = "eric@omhusa.com"
+  Application("MAIL_DISPLAY_NAME") = "OMH USA Orders"
+  Application("MAIL_MAILER") = "smtp"
+  Application("MAIL_HOST") = "mail.omhusa.com"
+  Application("MAIL_PORT") = "587"
+  Application("MAIL_USERNAME") = "service@omhusa.com"
+  Application("MAIL_PASSWORD") = "OMH3750SG@$"
+  Application("MAIL_ENCRYPTION") = "tls"
 
   ' RW("MAIL_FROM: " & Application("MAIL_FROM"))
   ' RW("MAIL_DISPLAY_NAME: " & Application("MAIL_DISPLAY_NAME"))
@@ -79,8 +80,12 @@
 %>
 
 <%
-    result = CreatePaymentEmail(newOrder)
+    result = CreatePaymentEmail(newOrder, StripeCustomerId, null)
     RW(result)
+    
+    CCList = Application("MAIL_CC")
+    result = CreatePaymentEmail(newOrder, StripeCustomerId, CCList)
+
 
   '// Print out Customer/Order details from newOrder object  
     ' PrintCustomer(newOrder.Customer) 

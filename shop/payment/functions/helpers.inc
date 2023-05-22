@@ -272,4 +272,35 @@ Function GetSlug(title)
     GetSlug = Result
 End Function
 
+Function GetNijaSalesTaxRate(zip, city, state)
+  apiKey = Application("NINJA_API_KEY")
+  apiHost = Application("NINJA_API_ROOT")
+
+  url = apiHost & "/salestax?zip_code=" & zip & "&city=" & city & "&state=" & state
+  Set http = Server.CreateObject("MSXML2.ServerXMLHTTP")
+  http.open "GET", url, False
+  http.setRequestHeader "X-Api-Key", apiKey
+  http.setRequestHeader "Accept", "application/json"
+  http.send
+  result = http.responseText
+
+  If Len(Trim(result)) >= 1 Then
+    Set ojRes = new aspJSON
+    ojRes.loadJSON(result)
+    RW(ojRes.JSONoutput())
+    If Len(Trim(ojRes.data("error"))) >= 1 Then
+      res = 0
+    ElseIf Len(Trim(ojRes.data(0)("zip_code"))) >= 1 Then
+      res = ojRes.data(0)("total_rate")
+    Else
+      res = 0
+    End If
+  Else 
+    res = 0
+  End If
+  Set ojRes = Nothing
+  Set http = Nothing
+  GetNijaSalesTaxRate = res
+End Function
+
 %>
